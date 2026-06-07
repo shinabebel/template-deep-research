@@ -24,14 +24,14 @@
 		"@mastra/loggers": "latest",
 		"@mastra/memory": "latest",
 		"@mastra/observability": "latest",
-		"ai": "^5.0.121",
-		"exa-js": "^2.0.9",
-		"zod": "^3.25.76"
+		"ai": "^6",
+		"exa-js": "^2.13.0",
+		"zod": "^4"
 	},
 	"devDependencies": {
 		"@biomejs/biome": "2.4.16",
 		"@types/node": "^25.9.2",
 		"mastra": "latest",
-		"typescript": "^5.9.3"
+		"typescript": "^6"
 	}
 }
