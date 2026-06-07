@@ -15,6 +15,9 @@ import { generateReportWorkflow } from './workflows/generateReportWorkflow';
 import { researchWorkflow } from './workflows/researchWorkflow';
 
 export const mastra = new Mastra({
+	server: {
+		host: '0.0.0.0', // listen on all interfaces; use 'localhost' to restrict to this machine
+	},
 	storage: new LibSQLStore({
 		id: 'mastra-storage',
 		url: 'file:../mastra.db',
