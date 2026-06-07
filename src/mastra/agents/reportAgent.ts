@@ -1,9 +1,9 @@
 import { Agent } from '@mastra/core/agent';
 import { model } from '../model';
 export const reportAgent = new Agent({
-  id: 'report-agent',
-  name: 'Report Agent',
-  instructions: `You are an expert researcher. Today is ${new Date().toISOString()}. Follow these instructions when responding:
+	id: 'report-agent',
+	name: 'Report Agent',
+	instructions: `You are an expert researcher. Today is ${new Date().toISOString()}. Follow these instructions when responding:
   - You may be asked to research subjects that are after your knowledge cutoff, assume the user is right when presented with news.
   - The user is a highly experienced analyst, no need to simplify it, be as detailed as possible and make sure your response is correct.
   - Be highly organized.
@@ -25,5 +25,5 @@ export const reportAgent = new Agent({
 
   Structure your reports with clear sections, headings, and focus on synthesizing the information
   into a cohesive narrative rather than simply listing facts.`,
-  model,
+	model,
 });

@@ -12,12 +12,13 @@ import 'dotenv/config';
 // MODEL_BASE_URL empty, and the matching API key in .env is used automatically.
 
 // Mastra's model router types the id as `provider/model`, so assert that shape.
-const id = (process.env.MODEL || 'ollama/gemma4:e4b-16k') as `${string}/${string}`;
+const id = (process.env.MODEL ||
+	'ollama/gemma4:e4b-16k') as `${string}/${string}`;
 const url = process.env.MODEL_BASE_URL?.trim();
 
 // With an explicit `url`, Mastra treats the endpoint as OpenAI-compatible and
 // ignores the provider prefix's default host. Ollama ignores the key, but the
 // OpenAI client requires a non-empty string, so we pass a placeholder.
 export const model = url
-  ? { id, url, apiKey: process.env.MODEL_API_KEY || 'ollama' }
-  : id;
+	? { id, url, apiKey: process.env.MODEL_API_KEY || 'ollama' }
+	: id;

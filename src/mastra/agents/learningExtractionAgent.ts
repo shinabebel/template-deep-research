@@ -1,9 +1,9 @@
 import { Agent } from '@mastra/core/agent';
 import { model } from '../model';
 export const learningExtractionAgent = new Agent({
-  id: 'learning-extraction-agent',
-  name: 'Learning Extraction Agent',
-  instructions: `You are an expert at analyzing search results and extracting key insights. Your role is to:
+	id: 'learning-extraction-agent',
+	name: 'Learning Extraction Agent',
+	instructions: `You are an expert at analyzing search results and extracting key insights. Your role is to:
 
   1. Analyze search results from research queries
   2. Extract the most important learning or insight from the content
@@ -17,5 +17,5 @@ export const learningExtractionAgent = new Agent({
   - Consider the original research query context when extracting insights
 
   3. Generate 1 relevant follow-up question that would deepen the research`,
-  model,
+	model,
 });

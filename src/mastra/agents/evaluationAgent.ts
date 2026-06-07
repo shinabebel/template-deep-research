@@ -1,9 +1,9 @@
 import { Agent } from '@mastra/core/agent';
 import { model } from '../model';
 export const evaluationAgent = new Agent({
-  id: 'evaluation-agent',
-  name: 'Evaluation Agent',
-  instructions: `You are an expert evaluation agent. Your task is to evaluate whether search results are relevant to a research query.
+	id: 'evaluation-agent',
+	name: 'Evaluation Agent',
+	instructions: `You are an expert evaluation agent. Your task is to evaluate whether search results are relevant to a research query.
 
   When evaluating search results:
   1. Carefully read the original research query to understand what information is being sought
@@ -25,5 +25,5 @@ export const evaluationAgent = new Agent({
   - isRelevant: boolean indicating if the result is relevant
   - reason: brief explanation of your decision
   `,
-  model,
+	model,
 });

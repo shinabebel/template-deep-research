@@ -14,10 +14,13 @@ npm run dev      # mastra dev — starts the local Mastra dev server / Studio pl
 npm run build    # mastra build — bundles to .mastra/output
 npm run start    # mastra start — runs the built output
 
-npx tsc --noEmit # typecheck (tsconfig has noEmit; this is the closest thing to a lint step)
+bun run lint     # biome check — lint + format check (no writes)
+bun run format   # biome check --write — apply safe fixes + formatting
+                 # add --unsafe for fixable rules biome marks "unsafe" (e.g. useTemplate, useOptionalChain)
+npx tsc --noEmit # typecheck (tsconfig has noEmit; Biome does not type-check)
 ```
 
-- **No test framework and no linter are configured.** `npm test` is a placeholder that exits 1 — do not assume a test runner exists.
+- **Linting/formatting is Biome** (`biome.json`, default tabs). **No test framework is configured** — `npm test` is a placeholder that exits 1; do not assume a test runner exists.
 - Requires Node `>=22.13.0`. The project is ESM (`"type": "module"`) and uses `moduleResolution: bundler`.
 
 ## Environment

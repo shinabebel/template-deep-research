@@ -1,13 +1,13 @@
 import { Agent } from '@mastra/core/agent';
+import { model } from '../model';
 import { evaluateResultTool } from '../tools/evaluateResultTool';
 import { extractLearningsTool } from '../tools/extractLearningsTool';
 import { webSearchTool } from '../tools/webSearchTool';
-import { model } from '../model';
 
 export const researchAgent = new Agent({
-  id: 'research-agent',
-  name: 'Research Agent',
-  instructions: `You are an expert research agent. Your goal is to research topics thoroughly by following this EXACT process:
+	id: 'research-agent',
+	name: 'Research Agent',
+	instructions: `You are an expert research agent. Your goal is to research topics thoroughly by following this EXACT process:
 
   **PHASE 1: Initial Research**
   1. Break down the main topic into 2 specific, focused search queries
@@ -41,10 +41,10 @@ export const researchAgent = new Agent({
 
   Use all the tools available to you systematically and stop after the follow-up phase.
   `,
-  model,
-  tools: {
-    webSearchTool,
-    evaluateResultTool,
-    extractLearningsTool,
-  },
+	model,
+	tools: {
+		webSearchTool,
+		evaluateResultTool,
+		extractLearningsTool,
+	},
 });

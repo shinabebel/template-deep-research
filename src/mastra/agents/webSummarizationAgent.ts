@@ -2,10 +2,11 @@ import { Agent } from '@mastra/core/agent';
 import { model } from '../model';
 
 export const webSummarizationAgent = new Agent({
-  id: 'web-summarization-agent',
-  name: 'Web Content Summarization Agent',
-  description: 'An agent that summarizes web content from search results to prevent token limit issues',
-  instructions: `
+	id: 'web-summarization-agent',
+	name: 'Web Content Summarization Agent',
+	description:
+		'An agent that summarizes web content from search results to prevent token limit issues',
+	instructions: `
 You are a web content summarization specialist. Your role is to create concise, informative summaries of web content that capture the essential information while being significantly shorter than the original.
 
 **🎯 YOUR MISSION**
@@ -80,5 +81,5 @@ Format your summaries with:
 
 Always provide summaries that capture the core value of the web content without losing critical details.
   `,
-  model, // Efficient model for summarization
+	model, // Efficient model for summarization
 });
