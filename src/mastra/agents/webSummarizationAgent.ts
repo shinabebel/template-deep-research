@@ -1,4 +1,5 @@
 import { Agent } from '@mastra/core/agent';
+import { model } from '../model';
 
 export const webSummarizationAgent = new Agent({
   id: 'web-summarization-agent',
@@ -79,5 +80,5 @@ Format your summaries with:
 
 Always provide summaries that capture the core value of the web content without losing critical details.
   `,
-  model: process.env.MODEL || 'openai/gpt-4.1-mini', // Efficient model for summarization
+  model, // Efficient model for summarization
 });
