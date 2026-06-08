@@ -25,11 +25,12 @@ npx tsc --noEmit # typecheck (tsconfig has noEmit; Biome does not type-check)
 
 ## Environment
 
-Copy `.env.example` to `.env`. Three things matter:
+Copy `.env.example` to `.env`. Four things matter:
 
 - `MODEL` — the LLM in `provider/model-name` format (Mastra's model router, e.g. `openai/gpt-4o-mini`, `anthropic/claude-sonnet-4-5-20250929`). Set the matching provider API key (`OPENAI_API_KEY`, `ANTHROPIC_API_KEY`, etc.).
 - `MODEL_BASE_URL` — only for local / OpenAI-compatible endpoints (see below). Leave empty for hosted providers.
-- `EXA_API_KEY` — required for `webSearchTool`; web search returns an error result (not a crash) if missing.
+- `WEB_SEARCH_PROVIDER` — which backend `webSearchTool` uses: `exa` (default) or `ollama`. See below.
+- `EXA_API_KEY` / `OLLAMA_API_KEY` — the key for the selected `WEB_SEARCH_PROVIDER`; web search returns an error result (not a crash) if the matching key is missing.
 
 All five agents import a single shared model config from [src/mastra/model.ts](src/mastra/model.ts), so `MODEL` reconfigures the entire app at once — do not re-add per-agent `model:` strings.
 
@@ -43,6 +44,17 @@ MODEL_BASE_URL=http://localhost:11434/v1  # MUST end in /v1, NOT /api/chat
 ```
 
 Requires `ollama serve` running and the model pulled. **Caveat:** the whole research flow depends on reliable tool-calling and Zod `structuredOutput`; small local models (especially Gemma) often fail at these. If tools never fire or JSON parsing errors, it's the model's capability, not the config — prefer a tool-use-capable local model (e.g. `qwen2.5`, `llama3.1`).
+
+### Switching the web search backend (Exa vs Ollama)
+
+[webSearchTool.ts](src/mastra/tools/webSearchTool.ts) supports two backends, selected by `WEB_SEARCH_PROVIDER`:
+
+- `exa` (default) — Exa search via `EXA_API_KEY`.
+- `ollama` — Ollama's **hosted** web search API (`POST https://ollama.com/api/web_search`, Bearer `OLLAMA_API_KEY`), called with native `fetch` (no extra dependency).
+
+Both backends normalize to a common `{ title, url, text }` shape, are capped at `NUM_RESULTS` (2), and feed the *same* `webSummarizationAgent` loop. To add a backend, write another `search*()` that returns `RawResult[]` and branch on `provider` — leave the summarization loop untouched.
+
+> `OLLAMA_API_KEY` (hosted web search at ollama.com) is unrelated to the local-model setup above (`MODEL_BASE_URL` → `ollama serve`). They can be used together.
 
 ## Architecture
 

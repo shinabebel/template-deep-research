@@ -3,8 +3,66 @@ import Exa from 'exa-js';
 import { z } from 'zod';
 import 'dotenv/config';
 
-// Initialize Exa client
+// A backend-agnostic search result, before summarization.
+type RawResult = {
+	title: string;
+	url: string;
+	text: string;
+};
+
+// Which web-search backend to use. Defaults to Exa to preserve prior behavior;
+// set WEB_SEARCH_PROVIDER=ollama in .env to try Ollama's web search instead.
+const provider = (process.env.WEB_SEARCH_PROVIDER || 'exa').toLowerCase();
+
+// How many results to feed into summarization (kept small for cost control).
+const NUM_RESULTS = 2;
+
+// Initialize Exa client (only used when the Exa backend is selected).
 const exa = new Exa(process.env.EXA_API_KEY);
+
+async function searchExa(query: string): Promise<RawResult[]> {
+	if (!process.env.EXA_API_KEY) {
+		throw new Error('Missing EXA_API_KEY');
+	}
+
+	const { results } = await exa.search(query, { numResults: NUM_RESULTS });
+
+	return (results || []).map((result) => ({
+		title: result.title || '',
+		url: result.url,
+		text: result.text || '',
+	}));
+}
+
+async function searchOllama(query: string): Promise<RawResult[]> {
+	if (!process.env.OLLAMA_API_KEY) {
+		throw new Error('Missing OLLAMA_API_KEY');
+	}
+
+	const response = await fetch('https://ollama.com/api/web_search', {
+		method: 'POST',
+		headers: {
+			Authorization: `Bearer ${process.env.OLLAMA_API_KEY}`,
+			'Content-Type': 'application/json',
+		},
+		body: JSON.stringify({ query }),
+	});
+
+	if (!response.ok) {
+		const body = await response.text();
+		throw new Error(`Ollama web search failed (${response.status}): ${body}`);
+	}
+
+	const data = (await response.json()) as {
+		results?: Array<{ title?: string; url?: string; content?: string }>;
+	};
+
+	return (data.results || []).slice(0, NUM_RESULTS).map((result) => ({
+		title: result.title || '',
+		url: result.url || '',
+		text: result.content || '',
+	}));
+}
 
 export const webSearchTool = createTool({
 	id: 'web-search',
@@ -18,15 +76,11 @@ export const webSearchTool = createTool({
 		const { query } = inputData;
 
 		try {
-			if (!process.env.EXA_API_KEY) {
-				console.error('Error: EXA_API_KEY not found in environment variables');
-				return { results: [], error: 'Missing API key' };
-			}
-
-			console.log(`Searching web for: "${query}"`);
-			const { results } = await exa.search(query, {
-				numResults: 2,
-			});
+			console.log(`Searching web for: "${query}" (provider: ${provider})`);
+			const results =
+				provider === 'ollama'
+					? await searchOllama(query)
+					: await searchExa(query);
 
 			if (!results || results.length === 0) {
 				console.log('No search results found');
@@ -52,7 +106,7 @@ export const webSearchTool = createTool({
 					// Skip if content is too short or missing
 					if (!result.text || result.text.length < 100) {
 						processedResults.push({
-							title: result.title || '',
+							title: result.title,
 							url: result.url,
 							content: result.text || 'No content available',
 						});
@@ -74,7 +128,7 @@ Provide a concise summary that captures the key information relevant to the rese
 					]);
 
 					processedResults.push({
-						title: result.title || '',
+						title: result.title,
 						url: result.url,
 						content: summaryResponse.text,
 					});
@@ -84,7 +138,7 @@ Provide a concise summary that captures the key information relevant to the rese
 					console.error('Error summarizing content:', summaryError);
 					// Fallback to truncated original content
 					processedResults.push({
-						title: result.title || '',
+						title: result.title,
 						url: result.url,
 						content: result.text
 							? `${result.text.substring(0, 500)}...`
