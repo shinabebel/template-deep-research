@@ -15,7 +15,7 @@ type RawResult = {
 const provider = (process.env.WEB_SEARCH_PROVIDER || 'exa').toLowerCase();
 
 // How many results to feed into summarization (kept small for cost control).
-const NUM_RESULTS = 2;
+const NUM_RESULTS = 10;
 
 // Initialize Exa client (only used when the Exa backend is selected).
 const exa = new Exa(process.env.EXA_API_KEY);
@@ -45,7 +45,7 @@ async function searchOllama(query: string): Promise<RawResult[]> {
 			Authorization: `Bearer ${process.env.OLLAMA_API_KEY}`,
 			'Content-Type': 'application/json',
 		},
-		body: JSON.stringify({ query }),
+		body: JSON.stringify({ query, max_results: NUM_RESULTS }),
 	});
 
 	if (!response.ok) {
